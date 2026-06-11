@@ -38,6 +38,30 @@ async function loadData(id) {
   return res.json();
 }
 
+// 埋點：推到 dataLayer，GTM / GA4 可直接接
+function track(event, props = {}) {
+  try {
+    window.dataLayer = window.dataLayer || [];
+    window.dataLayer.push({ event, deck_id: state.data?.id, ...props });
+  } catch (e) { /* no-op */ }
+}
+
+// 把進站網址的 utm_* / 點擊 ID 透傳到 CTA 連結，維持歸因鏈
+function buildCtaUrl() {
+  try {
+    const url = new URL(state.data.ctaUrl, location.href);
+    const incoming = new URLSearchParams(location.search);
+    incoming.forEach((v, k) => {
+      if (/^utm_/i.test(k) || k === "gclid" || k === "fbclid" || k === "yclid") {
+        url.searchParams.set(k, v);
+      }
+    });
+    return url.toString();
+  } catch (e) {
+    return state.data.ctaUrl;
+  }
+}
+
 function renderProgress() {
   progressEl.innerHTML = Array.from({ length: state.count })
     .map((_, i) => `<span class="progress-segment ${i === state.index ? "active" : ""}"></span>`)
@@ -48,6 +72,13 @@ function renderProgress() {
 function renderCover() {
   const c = state.data.cover;
   const dir = c.up ? "up" : "down";
+  // 把鉤子數字（近一年報酬）拉到封面當誘因
+  const y1 = state.data.perfRisk?.return?.y1;
+  const teaser = has(y1) ? `
+      <div class="cover-teaser">
+        <span class="t-label">近一年報酬</span>
+        <span class="t-value ${dirOf(y1)}">${esc(y1)}</span>
+      </div>` : "";
   return `
     <section class="cover">
       <span class="cover-tag">${show(state.data.categoryLabel, "ETF")}</span>
@@ -56,6 +87,7 @@ function renderCover() {
         <h2 class="cover-name">${esc(c.name)}</h2>
         <p class="cover-pitch">${show(c.indexOrPitch, "")}</p>
       </div>
+      ${teaser}
       <div class="cover-price-box">
         <div class="cover-price ${dir}">${show(c.price)}</div>
         <div class="cover-change ${dir}">${show(c.change)}　${show(c.changePct)}</div>
@@ -263,6 +295,8 @@ function renderControls() {
   nextBtn.textContent = isLast ? "開啟 XQ 全球贏家" : "下一張";
   nextBtn.classList.toggle("btn-cta-green", isLast);
   nextBtn.classList.toggle("btn-primary", !isLast);
+  // 首卡讓「下一張」脈動，暗示可往下看
+  nextBtn.classList.toggle("pulse", isFirst);
   nextBtn.closest(".controls").classList.toggle("single-next", isFirst);
 }
 
@@ -274,9 +308,13 @@ function render() {
   cardBodyEl.classList.remove("swap");
   void cardBodyEl.offsetWidth;
   cardBodyEl.classList.add("swap");
+  track("card_view", { card_index: state.index, card_count: state.count });
 }
 
-function openCta() { window.open(state.data.ctaUrl, "_blank", "noopener,noreferrer"); }
+function openCta() {
+  track("cta_click", { card_index: state.index });
+  window.open(buildCtaUrl(), "_blank", "noopener,noreferrer");
+}
 
 function renderError(msg) {
   progressEl.innerHTML = "";

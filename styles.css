@@ -156,6 +156,11 @@ body::before {
   box-shadow: 0 10px 26px rgba(37, 217, 138, 0.42);
 }
 .btn[hidden] { display: none; }
+@keyframes btnPulse {
+  0%, 100% { box-shadow: 0 10px 26px rgba(91, 108, 255, 0.4); }
+  50% { box-shadow: 0 10px 30px rgba(91, 108, 255, 0.75); transform: translateY(-1px); }
+}
+.btn.pulse { animation: btnPulse 1.8s ease-in-out infinite; }
 
 /* ---------- 通用 ---------- */
 .block-title {
@@ -203,6 +208,19 @@ body::before {
   -webkit-text-fill-color: transparent;
 }
 .cover-pitch { font-size: 14.5px; color: #aebccf; margin: 8px 0 0; line-height: 1.6; }
+.cover-teaser {
+  margin-top: 18px;
+  display: flex; align-items: baseline; gap: 10px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, rgba(255, 207, 107, 0.1), rgba(255, 85, 96, 0.06));
+  border: 1px solid rgba(255, 207, 107, 0.24);
+  border-radius: 14px;
+}
+.cover-teaser .t-label { font-size: 12px; color: var(--muted); letter-spacing: .5px; }
+.cover-teaser .t-value {
+  font-family: "Sora", sans-serif;
+  font-size: 26px; font-weight: 800; letter-spacing: -0.5px; margin-left: auto;
+}
 .cover-price-box {
   margin-top: auto;
   position: relative;
