@@ -1,6 +1,6 @@
 const slideKeys = ["cover", "basic", "holdings", "perfRisk", "cta"];
 
-const state = { index: 0, data: null };
+const state = { index: 0, data: null, mode: "etf", count: 5 };
 
 const deckTitleEl = document.getElementById("deckTitle");
 const progressEl = document.getElementById("progress");
@@ -38,7 +38,7 @@ async function loadData(id) {
 }
 
 function renderProgress() {
-  progressEl.innerHTML = slideKeys
+  progressEl.innerHTML = Array.from({ length: state.count })
     .map((_, i) => `<span class="progress-segment ${i === state.index ? "active" : ""}"></span>`)
     .join("");
 }
@@ -179,9 +179,70 @@ const HEADERS = {
   cta: { bg: "#14532d", text: (d) => d.cta?.header || "3 步驟，用 XQ 追蹤 ETF" },
 };
 
+/* ===================== 功能型 deck（deckMode: feature）===================== */
+const FEATURE_COLORS = ["#6f63d6", "#2f7f9f", "#16a06f", "#5b4db2", "#14532d"];
+
+function renderFeatureCover(c) {
+  return `
+    <section class="cover">
+      ${has(c.tag) ? `<span class="cover-tag">${esc(c.tag)}</span>` : ""}
+      <div>
+        <h2 class="cover-name">${esc(c.title)}</h2>
+        <p class="cover-pitch">${show(c.pitch, "")}</p>
+      </div>
+      ${has(c.heroStat) ? `
+      <div class="cover-price-box">
+        <div class="cover-price">${esc(c.heroStat)}</div>
+        ${has(c.heroLabel) ? `<div class="cover-asof">${esc(c.heroLabel)}</div>` : ""}
+      </div>` : ""}
+    </section>`;
+}
+
+function renderFeatureCard2(c) {
+  const bullets = (c.bullets || []).map((b) => {
+    if (typeof b === "string") return `<li>${esc(b)}</li>`;
+    return `<li><b>${esc(b.k)}</b>${has(b.v) ? "：" + esc(b.v) : ""}</li>`;
+  }).join("");
+  return `
+    ${has(c.subtitle) ? `<p class="feat-sub">${esc(c.subtitle)}</p>` : ""}
+    <ul class="bullets">${bullets}</ul>
+    ${has(c.highlight) ? `<div class="highlight">${esc(c.highlight)}</div>` : ""}`;
+}
+
+function renderFeatureCta(c) {
+  const steps = (c.steps || []).map((s, i) => `
+    <div class="step">
+      <span class="step-no">${i + 1}</span>
+      <div><h3>${esc(s.title)}</h3><p>${esc(s.desc)}</p></div>
+    </div>`).join("");
+  return `
+    <div class="steps">${steps}</div>
+    <div class="brand-box">
+      <h3>${esc(c.brandBox?.title || "XQ 全球贏家")}</h3>
+      <p>${esc(c.brandBox?.desc || "")}</p>
+    </div>`;
+}
+
+function renderFeatureBody(card) {
+  if (card.key === "cover") return renderFeatureCover(card);
+  if (card.key === "cta") return renderFeatureCta(card);
+  return renderFeatureCard2(card);
+}
+/* ========================================================================= */
+
 function renderCard() {
+  cardEl.setAttribute("aria-label", `第 ${state.index + 1} 張，共 ${state.count} 張`);
+
+  if (state.mode === "feature") {
+    const card = state.data.cards[state.index];
+    cardHeaderEl.style.background = card.color || FEATURE_COLORS[state.index % FEATURE_COLORS.length];
+    cardHeaderEl.textContent = card.header || "";
+    cardBodyEl.innerHTML = renderFeatureBody(card);
+    cardBodyEl.scrollTop = 0;
+    return;
+  }
+
   const key = slideKeys[state.index];
-  cardEl.setAttribute("aria-label", `第 ${state.index + 1} 張，共 ${slideKeys.length} 張`);
   const head = HEADERS[key];
   cardHeaderEl.style.background = head.bg;
   cardHeaderEl.textContent = head.text(state.data);
@@ -196,7 +257,7 @@ function renderCard() {
 
 function renderControls() {
   const isFirst = state.index === 0;
-  const isLast = state.index === slideKeys.length - 1;
+  const isLast = state.index === state.count - 1;
   prevBtn.hidden = isFirst;
   nextBtn.textContent = isLast ? "開啟 XQ 全球贏家" : "下一張";
   nextBtn.classList.toggle("btn-cta-green", isLast);
@@ -224,7 +285,7 @@ prevBtn.addEventListener("click", () => {
 });
 nextBtn.addEventListener("click", () => {
   if (!state.data) return;
-  if (state.index === slideKeys.length - 1) { openCta(); return; }
+  if (state.index === state.count - 1) { openCta(); return; }
   state.index += 1;
   render();
 });
@@ -236,7 +297,7 @@ cardEl.addEventListener("touchend", (e) => {
   if (touchX == null || !state.data) return;
   const dx = e.changedTouches[0].clientX - touchX;
   if (Math.abs(dx) < 50) return;
-  if (dx < 0 && state.index < slideKeys.length - 1) { state.index++; render(); }
+  if (dx < 0 && state.index < state.count - 1) { state.index++; render(); }
   if (dx > 0 && state.index > 0) { state.index--; render(); }
   touchX = null;
 }, { passive: true });
@@ -247,7 +308,15 @@ async function init() {
     const data = await loadData(id);
     state.data = data;
     state.index = 0;
-    deckTitleEl.textContent = `${data.id} ${data.cover?.name || ""} ｜ ETF 圖卡`;
+    if (data.deckMode === "feature") {
+      state.mode = "feature";
+      state.count = (data.cards || []).length;
+      deckTitleEl.textContent = data.title || "XQ 功能介紹";
+    } else {
+      state.mode = "etf";
+      state.count = slideKeys.length;
+      deckTitleEl.textContent = `${data.id} ${data.cover?.name || ""} ｜ ETF 圖卡`;
+    }
     render();
   } catch (e) {
     renderError(e instanceof Error ? e.message : "未知錯誤");
