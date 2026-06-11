@@ -1,0 +1,51 @@
+{
+  "deckType": "etf",
+  "id": "00919",
+  "category": "dividend",
+  "categoryLabel": "高股息 ETF",
+  "ctaUrl": "https://www.xq.com.tw/?utm_source=photocard&utm_medium=card&utm_campaign=etf_card&deck=etf_00919",
+  "cover": {
+    "name": "群益台灣精選高息",
+    "indexOrPitch": "精選高殖利率台股，季季配息",
+    "price": "30.78",
+    "change": "+0.48",
+    "changePct": "+1.58%",
+    "up": true,
+    "asOf": "2026/06/03"
+  },
+  "basic": {
+    "ageYears": "4 年",
+    "expenseRatio": "0.30%",
+    "aum": "4,469.34 億",
+    "dividendTTM": "2.86 元",
+    "dividendFreq": "季配",
+    "strategyNote": "被動式高股息 ETF，追蹤高殖利率指數，以「領息」為主要訴求；管理費 0.30% 相對親民，規模大、流動性佳，是存股族常見的核心配置之一。"
+  },
+  "holdings": {
+    "yield": "--",
+    "sectors": [],
+    "top": [
+      { "name": "聯詠" }, { "name": "聯發科" }, { "name": "光寶科" }, { "name": "緯創" }
+    ],
+    "note": "高股息 ETF 成分隨選股指數每半年調整，以最新公告為準（此處為示意）"
+  },
+  "perfRisk": {
+    "return": { "m1": "+30.15%", "m3": "+30.88%", "y1": "+55.68%", "ytd": "+42.04%" },
+    "risk": { "std": "--", "sharpe": "--", "beta": "--" },
+    "benchmark": { "id": "0050", "name": "元大台灣50", "std": "19.67", "sharpe": "1.17", "beta": "0.97" },
+    "takeaway": "報酬表現強勢，但本範例的風險分頁資料尚未取得（示範缺值處理）；高股息型通常波動低於市值型，實際數值以 XQ 風險分頁為準。"
+  },
+  "cta": {
+    "header": "3 步驟，用 XQ 追蹤這檔 ETF",
+    "steps": [
+      { "title": "加入自選", "desc": "追蹤這檔高股息 ETF 的配息與填息" },
+      { "title": "自主理財監控", "desc": "用資產配置試算，看它在你資產裡的領息角色" },
+      { "title": "同類比一比", "desc": "和 00878、00919 等高股息 ETF 比殖利率與報酬" }
+    ],
+    "brandBox": {
+      "title": "XQ 自主理財",
+      "desc": "高股息 ETF 怎麼挑？\n殖利率、填息、報酬一次比，用 XQ 看清楚"
+    },
+    "buttonText": "開啟 XQ 全球贏家"
+  }
+}

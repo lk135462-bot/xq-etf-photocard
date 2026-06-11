@@ -1,0 +1,257 @@
+const slideKeys = ["cover", "basic", "holdings", "perfRisk", "cta"];
+
+const state = { index: 0, data: null };
+
+const deckTitleEl = document.getElementById("deckTitle");
+const progressEl = document.getElementById("progress");
+const cardEl = document.getElementById("card");
+const cardHeaderEl = document.getElementById("cardHeader");
+const cardBodyEl = document.getElementById("cardBody");
+const prevBtn = document.getElementById("prevBtn");
+const nextBtn = document.getElementById("nextBtn");
+
+function esc(s = "") {
+  return String(s)
+    .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;").replaceAll("'", "&#39;");
+}
+
+// 缺值判斷：空字串 / null / "--" / "—" 視為缺
+function has(v) {
+  if (v === 0) return true;
+  if (v == null) return false;
+  const s = String(v).trim();
+  return s !== "" && s !== "--" && s !== "—";
+}
+function show(v, fallback = "—") { return has(v) ? esc(v) : fallback; }
+
+function getIdFromUrl() {
+  const p = new URLSearchParams(location.search);
+  const raw = (p.get("id") || "00981A").trim().toUpperCase();
+  return raw.replace(/[^A-Z0-9_-]/g, "") || "00981A";
+}
+
+async function loadData(id) {
+  const res = await fetch(`data/${encodeURIComponent(id)}.json`, { headers: { Accept: "application/json" } });
+  if (!res.ok) throw new Error(`資料載入失敗（${res.status}）`);
+  return res.json();
+}
+
+function renderProgress() {
+  progressEl.innerHTML = slideKeys
+    .map((_, i) => `<span class="progress-segment ${i === state.index ? "active" : ""}"></span>`)
+    .join("");
+}
+
+/* ---------- 卡1 封面 ---------- */
+function renderCover() {
+  const c = state.data.cover;
+  const dir = c.up ? "up" : "down";
+  return `
+    <section class="cover">
+      <span class="cover-tag">${show(state.data.categoryLabel, "ETF")}</span>
+      <div>
+        <div class="cover-id">${esc(state.data.id)}</div>
+        <h2 class="cover-name">${esc(c.name)}</h2>
+        <p class="cover-pitch">${show(c.indexOrPitch, "")}</p>
+      </div>
+      <div class="cover-price-box">
+        <div class="cover-price ${dir}">${show(c.price)}</div>
+        <div class="cover-change ${dir}">${show(c.change)}　${show(c.changePct)}</div>
+        <div class="cover-asof">資料日期 ${show(c.asOf)}</div>
+      </div>
+    </section>`;
+}
+
+/* ---------- 卡2 這檔是什麼 ---------- */
+function renderBasic() {
+  const b = state.data.basic;
+  return `
+    <div class="grid g2">
+      <div class="cell"><div class="cell-label">成立年資</div><div class="cell-value">${show(b.ageYears)}</div></div>
+      <div class="cell"><div class="cell-label">管理費（內扣）</div><div class="cell-value">${show(b.expenseRatio)}</div></div>
+      <div class="cell"><div class="cell-label">規模</div><div class="cell-value sm">${show(b.aum)}</div></div>
+      <div class="cell"><div class="cell-label">近一年配息</div><div class="cell-value sm">${show(b.dividendTTM, "尚未配息")}</div></div>
+    </div>
+    <p class="kv-inline">配息頻率：<b>${show(b.dividendFreq, "—")}</b></p>
+    <p class="para">${show(b.strategyNote, "")}</p>`;
+}
+
+/* ---------- 卡3 成分與配息 ---------- */
+function renderHoldings() {
+  const h = state.data.holdings;
+  const sectors = Array.isArray(h.sectors) ? h.sectors.filter((s) => has(s.name)) : [];
+  const top = Array.isArray(h.top) ? h.top.filter((t) => has(t)) : [];
+
+  const yieldBlock = `
+    <div class="yield-hero">
+      <div class="v">${show(h.yield, "—")}</div>
+      <div class="l">殖利率（近一年配息 ${show(state.data.basic?.dividendTTM, "—")}）</div>
+    </div>`;
+
+  const sectorBlock = sectors.length
+    ? `<p class="block-title">產業分布</p>` + sectors.map((s) => `
+        <div class="bar-row">
+          <span class="bar-name">${esc(s.name)}</span>
+          <span class="bar-track"><span class="bar-fill" style="width:${Number(s.ratio) || 0}%"></span></span>
+          <span class="bar-val">${has(s.ratio) && Number(s.ratio) > 0 ? Number(s.ratio) + "%" : "—"}</span>
+        </div>`).join("")
+    : "";
+
+  const topBlock = top.length
+    ? `<p class="block-title" style="margin-top:12px">前十大成分股</p>
+       <div class="chips">${top.map((t) => `<span class="chip">${esc(t.name || t)}</span>`).join("")}</div>`
+    : "";
+
+  return yieldBlock + sectorBlock + topBlock +
+    `<p class="disclaimer">${show(h.note, "成分以最新公告為準，實際持股請於 XQ 內查看")}</p>`;
+}
+
+/* ---------- 卡4 報酬與風險 ---------- */
+function renderPerfRisk() {
+  const p = state.data.perfRisk;
+  const r = p.return || {};
+  const rk = p.risk || {};
+  const bm = p.benchmark || {};
+
+  const retGrid = `
+    <p class="block-title">報酬表現</p>
+    <div class="grid g2">
+      <div class="cell"><div class="cell-label">1 月</div><div class="cell-value ${dirOf(r.m1)}">${show(r.m1)}</div></div>
+      <div class="cell"><div class="cell-label">3 月</div><div class="cell-value ${dirOf(r.m3)}">${show(r.m3)}</div></div>
+      <div class="cell"><div class="cell-label">1 年</div><div class="cell-value ${dirOf(r.y1)}">${show(r.y1)}</div></div>
+      <div class="cell"><div class="cell-label">YTD</div><div class="cell-value ${dirOf(r.ytd)}">${show(r.ytd)}</div></div>
+    </div>`;
+
+  const riskAvailable = has(rk.std) || has(rk.sharpe) || has(rk.beta);
+  const riskGrid = riskAvailable ? `
+    <p class="block-title">風險指標</p>
+    <div class="grid g3">
+      <div class="cell"><div class="cell-label">標準差</div><div class="cell-value">${show(rk.std)}</div><div class="cell-sub">波動幅度</div></div>
+      <div class="cell"><div class="cell-label">Sharpe</div><div class="cell-value">${show(rk.sharpe)}</div><div class="cell-sub">風險調整報酬</div></div>
+      <div class="cell"><div class="cell-label">Beta</div><div class="cell-value">${show(rk.beta)}</div><div class="cell-sub">對大盤敏感度</div></div>
+    </div>` : `
+    <p class="block-title">風險指標</p>
+    <div class="missing">成立未滿一年，風險指標（標準差／Sharpe／Beta）資料量不足，待累積。</div>`;
+
+  const benchBlock = (has(bm.std) || has(bm.sharpe) || has(bm.beta)) ? `
+    <div class="bench-row">
+      <span>對照 <b>${show(bm.id)} ${show(bm.name, "")}</b></span>
+      <span>標準差 <b>${show(bm.std)}</b>｜Sharpe <b>${show(bm.sharpe)}</b>｜Beta <b>${show(bm.beta)}</b></span>
+    </div>` : "";
+
+  const takeaway = has(p.takeaway) ? `<div class="note-box">${esc(p.takeaway)}</div>` : "";
+
+  const term = `<p class="term">標準差＝上下震盪幅度（越大越會跳）｜Sharpe＝每承擔 1 單位風險換到多少報酬（越高越好）｜Beta＝大盤漲跌 1%，它大約跟著動多少。</p>`;
+
+  return retGrid + riskGrid + benchBlock + takeaway + term;
+}
+
+function dirOf(v) {
+  if (!has(v)) return "";
+  const s = String(v);
+  if (s.includes("-")) return "down";
+  if (s.includes("+")) return "up";
+  return "";
+}
+
+/* ---------- 卡5 CTA ---------- */
+function renderCta() {
+  const c = state.data.cta;
+  const steps = (c.steps || []).map((s, i) => `
+    <div class="step">
+      <span class="step-no">${i + 1}</span>
+      <div><h3>${esc(s.title)}</h3><p>${esc(s.desc)}</p></div>
+    </div>`).join("");
+  return `
+    <div class="steps">${steps}</div>
+    <div class="brand-box">
+      <h3>${esc(c.brandBox?.title || "XQ 全球贏家")}</h3>
+      <p>${esc(c.brandBox?.desc || "")}</p>
+    </div>`;
+}
+
+const HEADERS = {
+  cover: { bg: "#6f63d6", text: (d) => `台股 ETF 圖卡 ・ ${d.id}` },
+  basic: { bg: "#2f7f9f", text: () => "這檔 ETF 是什麼" },
+  holdings: { bg: "#16a06f", text: () => "成分與配息" },
+  perfRisk: { bg: "#5b4db2", text: () => "報酬與風險" },
+  cta: { bg: "#14532d", text: (d) => d.cta?.header || "3 步驟，用 XQ 追蹤 ETF" },
+};
+
+function renderCard() {
+  const key = slideKeys[state.index];
+  cardEl.setAttribute("aria-label", `第 ${state.index + 1} 張，共 ${slideKeys.length} 張`);
+  const head = HEADERS[key];
+  cardHeaderEl.style.background = head.bg;
+  cardHeaderEl.textContent = head.text(state.data);
+
+  const renderers = {
+    cover: renderCover, basic: renderBasic, holdings: renderHoldings,
+    perfRisk: renderPerfRisk, cta: renderCta,
+  };
+  cardBodyEl.innerHTML = renderers[key]();
+  cardBodyEl.scrollTop = 0;
+}
+
+function renderControls() {
+  const isFirst = state.index === 0;
+  const isLast = state.index === slideKeys.length - 1;
+  prevBtn.hidden = isFirst;
+  nextBtn.textContent = isLast ? "開啟 XQ 全球贏家" : "下一張";
+  nextBtn.classList.toggle("btn-cta-green", isLast);
+  nextBtn.classList.toggle("btn-primary", !isLast);
+  nextBtn.closest(".controls").classList.toggle("single-next", isFirst);
+}
+
+function render() { renderProgress(); renderCard(); renderControls(); }
+
+function openCta() { window.open(state.data.ctaUrl, "_blank", "noopener,noreferrer"); }
+
+function renderError(msg) {
+  progressEl.innerHTML = "";
+  cardHeaderEl.style.background = "#b24f3d";
+  cardHeaderEl.textContent = "載入錯誤";
+  cardBodyEl.innerHTML = `<p class="para">${esc(msg)}</p>`;
+  prevBtn.hidden = true;
+  nextBtn.hidden = true;
+}
+
+prevBtn.addEventListener("click", () => {
+  if (!state.data) return;
+  state.index = Math.max(0, state.index - 1);
+  render();
+});
+nextBtn.addEventListener("click", () => {
+  if (!state.data) return;
+  if (state.index === slideKeys.length - 1) { openCta(); return; }
+  state.index += 1;
+  render();
+});
+
+// 觸控左右滑動
+let touchX = null;
+cardEl.addEventListener("touchstart", (e) => { touchX = e.changedTouches[0].clientX; }, { passive: true });
+cardEl.addEventListener("touchend", (e) => {
+  if (touchX == null || !state.data) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) < 50) return;
+  if (dx < 0 && state.index < slideKeys.length - 1) { state.index++; render(); }
+  if (dx > 0 && state.index > 0) { state.index--; render(); }
+  touchX = null;
+}, { passive: true });
+
+async function init() {
+  const id = getIdFromUrl();
+  try {
+    const data = await loadData(id);
+    state.data = data;
+    state.index = 0;
+    deckTitleEl.textContent = `${data.id} ${data.cover?.name || ""} ｜ ETF 圖卡`;
+    render();
+  } catch (e) {
+    renderError(e instanceof Error ? e.message : "未知錯誤");
+  }
+}
+
+init();

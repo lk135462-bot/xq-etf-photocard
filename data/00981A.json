@@ -1,0 +1,52 @@
+{
+  "deckType": "etf",
+  "id": "00981A",
+  "category": "active",
+  "categoryLabel": "主動式 ETF",
+  "ctaUrl": "https://www.xq.com.tw/?utm_source=photocard&utm_medium=card&utm_campaign=etf_card&deck=etf_00981A",
+  "cover": {
+    "name": "主動統一台股增長",
+    "indexOrPitch": "主動選股，鎖定台股成長動能",
+    "price": "31.81",
+    "change": "+0.48",
+    "changePct": "+1.53%",
+    "up": true,
+    "asOf": "2026/06/03"
+  },
+  "basic": {
+    "ageYears": "1 年",
+    "expenseRatio": "1.00%",
+    "aum": "2,389.45 億",
+    "dividendTTM": "1.04 元",
+    "dividendFreq": "季配",
+    "strategyNote": "主動式 ETF，由經理人主動選股、不完全跟隨指數，目標是賺取超越大盤的成長報酬。管理費高於被動式 ETF，換取選股彈性與超額報酬的機會。"
+  },
+  "holdings": {
+    "yield": "3.50%",
+    "sectors": [],
+    "top": [
+      { "name": "台積電" }, { "name": "鴻海" }, { "name": "聯發科" },
+      { "name": "台達電" }, { "name": "廣達" }
+    ],
+    "note": "前十大成分以最新公告為準（此處為示意，實際持股請於 XQ 內查看）"
+  },
+  "perfRisk": {
+    "return": { "m1": "+12.48%", "m3": "+63.97%", "y1": "+223.70%", "ytd": "+92.00%" },
+    "risk": { "std": "27.63", "sharpe": "1.17", "beta": "1.19" },
+    "benchmark": { "id": "0050", "name": "元大台灣50", "std": "19.67", "sharpe": "1.17", "beta": "0.97" },
+    "takeaway": "近一年報酬亮眼，但波動（標準差 27.63）明顯高於 0050（19.67），屬於高成長、高波動型；Beta 1.19 代表大盤漲跌時它放大約 1.2 倍。"
+  },
+  "cta": {
+    "header": "3 步驟，用 XQ 追蹤這檔 ETF",
+    "steps": [
+      { "title": "加入自選", "desc": "追蹤這檔 ETF 的報酬與配息變化" },
+      { "title": "自主理財監控", "desc": "用 ETF 策略監控、資產配置試算，看它在你資產裡的角色" },
+      { "title": "同類比一比", "desc": "比較報酬／風險／管理費，挑出最適合自己的 ETF" }
+    ],
+    "brandBox": {
+      "title": "XQ 自主理財",
+      "desc": "ETF 百百檔，配息、報酬、風險一次比\n用 XQ 把資產配置算清楚，不靠感覺"
+    },
+    "buttonText": "開啟 XQ 全球贏家"
+  }
+}

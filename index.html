@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh-Hant">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>台股 ETF 圖卡 ｜ XQ 全球贏家</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell" aria-label="台股 ETF 財經圖卡">
+      <header class="topbar">
+        <h1 class="title" id="deckTitle">ETF 圖卡</h1>
+        <div class="progress" id="progress" aria-label="卡片進度"></div>
+      </header>
+
+      <section class="viewport" aria-live="polite">
+        <article class="card" id="card" role="group" aria-roledescription="slide" aria-label="第 1 張，共 5 張">
+          <div class="card-header" id="cardHeader"></div>
+          <div class="card-body" id="cardBody"></div>
+
+          <footer class="controls card-controls">
+            <button class="btn btn-secondary" id="prevBtn" type="button">上一張</button>
+            <button class="btn btn-primary" id="nextBtn" type="button">下一張</button>
+          </footer>
+        </article>
+      </section>
+    </main>
+
+    <script src="app.js"></script>
+  </body>
+</html>

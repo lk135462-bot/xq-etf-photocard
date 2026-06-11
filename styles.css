@@ -1,0 +1,262 @@
+:root {
+  --bg: #0b0f14;
+  --card: #141a22;
+  --card-2: #1c2530;
+  --line: #2a3441;
+  --text: #eef2f6;
+  --muted: #8a97a6;
+  --up: #ff4d52;     /* 台股紅漲 */
+  --down: #1fd17a;   /* 台股綠跌 */
+  --accent: #2f7f9f;
+  --purple: #6f63d6;
+  --green: #16a06f;
+  --orange: #e08a3c;
+  --gold: #d4a23a;
+}
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+}
+
+.app-shell {
+  min-height: 100dvh;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: env(safe-area-inset-top) 14px calc(env(safe-area-inset-bottom) + 12px);
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  padding: 14px 4px 10px;
+}
+.title {
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: .5px;
+  margin: 0 0 10px;
+  color: var(--text);
+}
+.progress {
+  display: flex;
+  gap: 6px;
+}
+.progress-segment {
+  height: 4px;
+  border-radius: 4px;
+  flex: 1;
+  background: var(--line);
+  transition: background .25s;
+}
+.progress-segment.active { background: var(--accent); }
+
+.viewport {
+  flex: 1;
+  display: flex;
+  align-items: stretch;
+}
+
+.card {
+  width: 100%;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 12px 40px rgba(0,0,0,.45);
+}
+
+.card-header {
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: .5px;
+}
+
+.card-body {
+  flex: 1;
+  padding: 18px 16px 8px;
+  overflow-y: auto;
+}
+
+.card-controls {
+  display: flex;
+  gap: 10px;
+  padding: 12px 14px calc(14px + env(safe-area-inset-bottom));
+  border-top: 1px solid var(--line);
+}
+.controls.single-next .btn-secondary { display: none; }
+
+.btn {
+  flex: 1;
+  border: 0;
+  border-radius: 12px;
+  padding: 14px 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  font-family: inherit;
+}
+.btn-secondary { background: var(--card-2); color: var(--muted); flex: 0 0 34%; }
+.btn-primary { background: var(--accent); color: #fff; }
+.btn-cta-green { background: var(--green); color: #fff; }
+.btn[hidden] { display: none; }
+
+/* ---------- 通用區塊 ---------- */
+.block-title {
+  font-size: 13px;
+  color: var(--muted);
+  margin: 0 0 8px;
+  font-weight: 700;
+}
+.muted { color: var(--muted); }
+
+/* ---------- 卡1 封面 ---------- */
+.cover { display: flex; flex-direction: column; gap: 12px; min-height: 100%; }
+.cover-tag {
+  align-self: flex-start;
+  background: rgba(111,99,214,.18);
+  color: #b9b0ff;
+  border: 1px solid rgba(111,99,214,.45);
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+}
+.cover-id { font-size: 14px; color: var(--muted); letter-spacing: 1px; margin-top: 6px; }
+.cover-name { font-size: 30px; font-weight: 800; margin: 2px 0 0; line-height: 1.2; }
+.cover-pitch { font-size: 15px; color: #c7d2dd; margin: 4px 0 0; }
+.cover-price-box {
+  margin-top: auto;
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  padding: 16px;
+}
+.cover-price { font-size: 34px; font-weight: 800; line-height: 1; }
+.cover-change { font-size: 16px; font-weight: 700; margin-top: 6px; }
+.cover-asof { font-size: 12px; color: var(--muted); margin-top: 10px; }
+.up { color: var(--up); }
+.down { color: var(--down); }
+
+/* ---------- 四宮格 / 三宮格 ---------- */
+.grid { display: grid; gap: 10px; margin: 0 0 14px; }
+.grid.g2 { grid-template-columns: 1fr 1fr; }
+.grid.g3 { grid-template-columns: 1fr 1fr 1fr; }
+.cell {
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 10px;
+  text-align: center;
+}
+.cell-label { font-size: 11px; color: var(--muted); }
+.cell-value { font-size: 18px; font-weight: 800; margin-top: 6px; }
+.cell-value.sm { font-size: 15px; }
+.cell-sub { font-size: 10px; color: var(--muted); margin-top: 3px; }
+
+/* ---------- 段落說明 ---------- */
+.para {
+  background: rgba(47,127,159,.12);
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: #d3dde6;
+  margin: 0 0 12px;
+}
+.kv-inline { font-size: 13px; color: var(--muted); margin: 0 0 10px; }
+.kv-inline b { color: var(--text); }
+
+/* ---------- 成分 / 產業條 ---------- */
+.yield-hero { text-align: center; margin-bottom: 14px; }
+.yield-hero .v { font-size: 32px; font-weight: 800; color: var(--gold); }
+.yield-hero .l { font-size: 12px; color: var(--muted); }
+.bar-row { display: flex; align-items: center; gap: 8px; margin: 7px 0; }
+.bar-name { font-size: 12px; width: 78px; color: #cfd9e2; flex: none; }
+.bar-track { flex: 1; height: 8px; background: var(--card-2); border-radius: 6px; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--accent); border-radius: 6px; }
+.bar-val { font-size: 12px; width: 42px; text-align: right; color: var(--muted); flex: none; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 10px; }
+.chip {
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 5px 11px;
+  font-size: 12px;
+  color: #d3dde6;
+}
+.disclaimer { font-size: 11px; color: var(--muted); margin-top: 6px; }
+
+/* ---------- 報酬 / 風險 ---------- */
+.note-box {
+  background: var(--card-2);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 12.5px;
+  line-height: 1.55;
+  color: #cfd9e2;
+  margin-top: 6px;
+}
+.bench-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: var(--muted);
+  background: rgba(255,255,255,.03);
+  border-radius: 10px;
+  padding: 9px 12px;
+  margin: 10px 0;
+}
+.bench-row b { color: #c7d2dd; }
+.missing {
+  background: rgba(212,162,58,.1);
+  border: 1px dashed rgba(212,162,58,.5);
+  border-radius: 12px;
+  padding: 14px;
+  font-size: 12.5px;
+  color: var(--gold);
+  text-align: center;
+}
+.term { font-size: 11px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
+/* ---------- CTA ---------- */
+.steps { margin: 0 0 14px; }
+.step {
+  display: flex;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+}
+.step:last-child { border-bottom: 0; }
+.step-no {
+  flex: none;
+  width: 26px; height: 26px;
+  border-radius: 50%;
+  background: var(--green);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex; align-items: center; justify-content: center;
+}
+.step h3 { margin: 0 0 3px; font-size: 14.5px; }
+.step p { margin: 0; font-size: 12.5px; color: var(--muted); }
+.brand-box {
+  background: rgba(22,160,111,.12);
+  border: 1px solid rgba(22,160,111,.4);
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+}
+.brand-box h3 { margin: 0 0 6px; font-size: 16px; color: #4fd6a3; }
+.brand-box p { margin: 0; font-size: 13px; color: #cfe9dd; line-height: 1.6; white-space: pre-line; }

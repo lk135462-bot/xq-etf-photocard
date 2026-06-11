@@ -1,0 +1,52 @@
+{
+  "deckType": "etf",
+  "id": "0050",
+  "category": "stock",
+  "categoryLabel": "市值型 ETF",
+  "ctaUrl": "https://www.xq.com.tw/?utm_source=photocard&utm_medium=card&utm_campaign=etf_card&deck=etf_0050",
+  "cover": {
+    "name": "元大台灣50",
+    "indexOrPitch": "一次買進台股市值前 50 大龍頭",
+    "price": "107.60",
+    "change": "+1.90",
+    "changePct": "+1.80%",
+    "up": true,
+    "asOf": "2026/06/03"
+  },
+  "basic": {
+    "ageYears": "—",
+    "expenseRatio": "—",
+    "aum": "—",
+    "dividendTTM": "—",
+    "dividendFreq": "半年配",
+    "strategyNote": "台股最具代表性的市值型 ETF，追蹤台灣 50 指數，持有市值最大的 50 檔權值股，半導體權重高。常被視為「買台股大盤」的代表，是長期配置的基準標的。"
+  },
+  "holdings": {
+    "yield": "1.36%",
+    "sectors": [],
+    "top": [
+      { "name": "台積電" }, { "name": "鴻海" }, { "name": "聯發科" },
+      { "name": "台達電" }, { "name": "富邦金" }
+    ],
+    "note": "成分依台灣 50 指數定期調整，以最新公告為準（此處為示意）"
+  },
+  "perfRisk": {
+    "return": { "m1": "—", "m3": "—", "y1": "—", "ytd": "—" },
+    "risk": { "std": "19.67", "sharpe": "1.17", "beta": "0.97" },
+    "benchmark": { "id": "", "name": "", "std": "", "sharpe": "", "beta": "" },
+    "takeaway": "0050 是常見的對標基準：Beta 0.97 貼近大盤、標準差 19.67 為市場一般水準。多數主動式或主題型 ETF 會拿它來比較報酬與風險。"
+  },
+  "cta": {
+    "header": "3 步驟，用 XQ 追蹤這檔 ETF",
+    "steps": [
+      { "title": "加入自選", "desc": "把 0050 設為你的台股配置基準" },
+      { "title": "自主理財監控", "desc": "用資產配置試算，建立核心＋衛星配置" },
+      { "title": "同類比一比", "desc": "比較其他 ETF 相對 0050 的報酬與風險" }
+    ],
+    "brandBox": {
+      "title": "XQ 自主理財",
+      "desc": "核心配置怎麼擺？\n用 XQ 把報酬、風險、配置一次算清楚"
+    },
+    "buttonText": "開啟 XQ 全球贏家"
+  }
+}
