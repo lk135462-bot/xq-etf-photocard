@@ -1,4 +1,4 @@
-const BUILD = "0612c";
+const BUILD = "0612d";
 const slideKeys = ["cover", "basic", "holdings", "perfRisk", "cta"];
 
 const state = { index: 0, data: null, mode: "etf", count: 5 };
@@ -216,6 +216,29 @@ const HEADERS = {
 /* ===================== 功能型 deck（deckMode: feature）===================== */
 const FEATURE_COLORS = ["#6f63d6", "#2f7f9f", "#16a06f", "#5b4db2", "#14532d"];
 
+// 模擬 XQ 真實 UI 的小預覽（tab 列 / 篩選 chip / 監控列）
+function renderFeatureVisual(v) {
+  if (!v || !v.type) return "";
+  if (v.type === "tabs") {
+    const active = v.active || 0;
+    return `<div class="ui-mock">
+      <div class="ui-tabs">${(v.items || []).map((t, i) =>
+        `<span class="ui-tab ${i === active ? "on" : ""}">${esc(t)}</span>`).join("")}</div>
+      ${Array.isArray(v.sample) ? `<div class="ui-quote">${v.sample.map((s) =>
+        `<div class="ui-q-row"><span>${esc(s.k)}</span><b>${esc(s.v)}</b></div>`).join("")}</div>` : ""}
+    </div>`;
+  }
+  if (v.type === "pills") {
+    return `<div class="ui-mock"><div class="ui-pills">${(v.items || []).map((t, i) =>
+      `<span class="ui-pill ${i === 0 ? "on" : ""}">${esc(t)}</span>`).join("")}</div></div>`;
+  }
+  if (v.type === "rows") {
+    return `<div class="ui-mock ui-rows">${(v.items || []).map((r) =>
+      `<div class="ui-row"><span>${esc(r.k)}</span><b>${esc(r.v)}</b></div>`).join("")}</div>`;
+  }
+  return "";
+}
+
 function renderFeatureCover(c) {
   return `
     <section class="cover">
@@ -224,6 +247,7 @@ function renderFeatureCover(c) {
         <h2 class="cover-name">${esc(c.title)}</h2>
         <p class="cover-pitch">${show(c.pitch, "")}</p>
       </div>
+      ${renderFeatureVisual(c.visual)}
       ${has(c.heroStat) ? `
       <div class="cover-price-box">
         <div class="cover-price">${esc(c.heroStat)}</div>
@@ -238,7 +262,9 @@ function renderFeatureCard2(c) {
     return `<li><b>${esc(b.k)}</b>${has(b.v) ? "：" + esc(b.v) : ""}</li>`;
   }).join("");
   return `
+    ${has(c.icon) ? `<div class="feat-icon">${esc(c.icon)}</div>` : ""}
     ${has(c.subtitle) ? `<p class="feat-sub">${esc(c.subtitle)}</p>` : ""}
+    ${renderFeatureVisual(c.visual)}
     <ul class="bullets">${bullets}</ul>
     ${has(c.highlight) ? `<div class="highlight">${esc(c.highlight)}</div>` : ""}`;
 }

@@ -385,7 +385,78 @@ body::before {
 .brand-box p { margin: 0; font-size: 13px; color: #cdeede; line-height: 1.7; white-space: pre-line; }
 
 /* ---------- 功能型 deck ---------- */
+.feat-icon {
+  width: 46px; height: 46px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 24px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(139, 91, 255, 0.2), rgba(47, 159, 255, 0.12));
+  border: 1px solid rgba(139, 91, 255, 0.3);
+  margin: 0 0 14px;
+}
 .feat-sub { font-size: 15px; color: #dbe4f0; font-weight: 700; margin: 0 0 16px; line-height: 1.5; }
+
+/* 模擬 XQ UI 的小預覽 */
+.ui-mock {
+  background: #0c121c;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 14px;
+  margin: 0 0 16px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+}
+.ui-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
+.ui-tab {
+  flex: 1; text-align: center;
+  font-size: 13px; color: var(--muted);
+  padding: 8px 2px 11px;
+  position: relative;
+}
+.ui-tab.on { color: #6cc0ff; font-weight: 700; }
+.ui-tab.on::after {
+  content: ""; position: absolute; left: 14%; right: 14%; bottom: -1px; height: 2px;
+  background: var(--grad-teal); border-radius: 2px;
+}
+.ui-quote { display: flex; flex-direction: column; gap: 8px; }
+.ui-q-row {
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 9px; padding: 9px 11px;
+  font-size: 12.5px; color: #c2cee0;
+}
+.ui-q-row b { font-family: "Sora", sans-serif; color: var(--up); font-weight: 700; font-size: 14px; }
+
+.ui-pills { display: flex; flex-wrap: wrap; gap: 8px; }
+.ui-pill {
+  font-size: 12.5px;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(108, 192, 255, 0.5);
+  color: #8fc2f0;
+  background: transparent;
+}
+.ui-pill.on {
+  background: var(--grad-teal);
+  color: #04222e;
+  font-weight: 700;
+  border-color: transparent;
+}
+
+.ui-rows { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
+.ui-row {
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(255, 255, 255, 0.035);
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  padding: 11px 13px;
+  font-size: 13px; color: #d2dcec;
+}
+.ui-row b {
+  font-size: 12px; font-weight: 700; color: #6fe7b6;
+  background: rgba(37, 217, 138, 0.12);
+  border: 1px solid rgba(37, 217, 138, 0.3);
+  border-radius: 999px; padding: 4px 10px;
+}
 .bullets { list-style: none; margin: 0 0 16px; padding: 0; counter-reset: feat; }
 .bullets li {
   counter-increment: feat;
