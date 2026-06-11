@@ -1,3 +1,4 @@
+const BUILD = "0612c";
 const slideKeys = ["cover", "basic", "holdings", "perfRisk", "cta"];
 
 const state = { index: 0, data: null, mode: "etf", count: 5 };
@@ -364,6 +365,7 @@ async function init() {
       state.count = slideKeys.length;
       deckTitleEl.textContent = `${data.id} ${data.cover?.name || ""} ｜ ETF 圖卡`;
     }
+    deckTitleEl.textContent += `　·　build ${BUILD}`;
     render();
   } catch (e) {
     renderError(e instanceof Error ? e.message : "未知錯誤");
