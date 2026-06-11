@@ -27,8 +27,9 @@ function show(v, fallback = "—") { return has(v) ? esc(v) : fallback; }
 
 function getIdFromUrl() {
   const p = new URLSearchParams(location.search);
-  const raw = (p.get("id") || "00981A").trim().toUpperCase();
-  return raw.replace(/[^A-Z0-9_-]/g, "") || "00981A";
+  // 保留原始大小寫（檔名 ticker 為大寫如 00981A、功能型為小寫如 etf-tool）
+  const raw = (p.get("id") || "00981A").trim();
+  return raw.replace(/[^A-Za-z0-9_-]/g, "") || "00981A";
 }
 
 async function loadData(id) {
