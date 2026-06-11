@@ -266,7 +266,15 @@ function renderControls() {
   nextBtn.closest(".controls").classList.toggle("single-next", isFirst);
 }
 
-function render() { renderProgress(); renderCard(); renderControls(); }
+function render() {
+  renderProgress();
+  renderCard();
+  renderControls();
+  // 重新觸發切換動畫
+  cardBodyEl.classList.remove("swap");
+  void cardBodyEl.offsetWidth;
+  cardBodyEl.classList.add("swap");
+}
 
 function openCta() { window.open(state.data.ctaUrl, "_blank", "noopener,noreferrer"); }
 
