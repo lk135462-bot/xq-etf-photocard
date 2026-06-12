@@ -1,4 +1,4 @@
-const BUILD = "0612g";
+const BUILD = "0612h";
 const slideKeys = ["cover", "basic", "holdings", "perfRisk", "cta"];
 const sectorKeys = ["cover", "brief", "members", "money", "cta"];
 
@@ -247,6 +247,9 @@ function renderFeatureVisual(v) {
   if (v.type === "rows") {
     return `<div class="ui-mock ui-rows">${(v.items || []).map((r) =>
       `<div class="ui-row"><span>${esc(r.k)}</span><b>${esc(r.v)}</b></div>`).join("")}</div>`;
+  }
+  if (v.type === "treemap") {
+    return renderTreemap(v);
   }
   return "";
 }
