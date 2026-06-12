@@ -1,5 +1,6 @@
-const BUILD = "0612e";
+const BUILD = "0612f";
 const slideKeys = ["cover", "basic", "holdings", "perfRisk", "cta"];
+const sectorKeys = ["cover", "brief", "members", "money", "cta"];
 
 const state = { index: 0, data: null, mode: "etf", count: 5 };
 
@@ -310,8 +311,120 @@ function renderFeatureBody(card) {
 }
 /* ========================================================================= */
 
+/* ===================== 熱門族群 deck（deckType: sector）===================== */
+const SECTOR_HEADERS = {
+  cover: { bg: "#b23a48", text: (d) => `熱門族群 ・ ${d.cover?.name || ""}` },
+  brief: { bg: "#2f7f9f", text: () => "族群懶人包" },
+  members: { bg: "#16a06f", text: () => "成員地圖" },
+  money: { bg: "#5b4db2", text: () => "強弱與資金溫度" },
+  cta: { bg: "#14532d", text: (d) => d.cta?.header || "3 步驟，用 XQ 追族群輪動" },
+};
+
+// 熱力圖（slot-based mini treemap）：塊面示意成交值、顏色依漲跌
+function tmColor(change) {
+  const n = parseFloat(String(change).replace(/[^0-9.\-]/g, "")) || 0;
+  const a = Math.min(0.9, 0.28 + Math.abs(n) / 11);
+  return n < 0 ? `rgba(20,190,120,${a})` : `rgba(255,70,90,${a})`;
+}
+function renderTreemap(tm) {
+  const blocks = (tm && tm.blocks) || [];
+  if (!blocks.length) return "";
+  const cells = blocks.slice(0, 6).map((b, i) =>
+    `<div class="tm-cell tm${i}" style="background:${tmColor(b.change)}">
+       <div class="tm-name">${esc(b.name)}</div>
+       <div class="tm-val">${esc(b.change)}</div>
+     </div>`).join("");
+  return `
+    ${has(tm.caption) ? `<p class="block-title">${esc(tm.caption)}</p>` : ""}
+    <div class="treemap">${cells}</div>`;
+}
+
+function renderSectorCover() {
+  const c = state.data.cover;
+  const m = c.market || {};
+  return `
+    <section class="cover">
+      <span class="cover-tag sector">${show(state.data.categoryLabel, "族群")}</span>
+      <div>
+        <h2 class="cover-name">${esc(c.name)}</h2>
+        <p class="cover-pitch">${show(c.pitch, "")}</p>
+      </div>
+      <div class="hook-box">
+        <div class="hook-label">${show(c.hookLabel, "月營收 YoY")}</div>
+        <div class="hook-value up">${show(c.hookValue)}</div>
+        <div class="hook-day">當日 <b class="${dirOf(c.dayChange)}">${show(c.dayChange)}</b></div>
+      </div>
+      <div class="market-row">
+        <span>加權 <b class="${dirOf(m.twse)}">${show(m.twse)}</b></span>
+        <span>櫃買 <b class="${dirOf(m.otc)}">${show(m.otc)}</b></span>
+        <span>台指近月 <b class="${dirOf(m.txf)}">${show(m.txf)}</b></span>
+      </div>
+      <div class="cover-asof">${show(c.asOf)}</div>
+    </section>`;
+}
+
+function renderSectorBrief() {
+  const b = state.data.brief || {};
+  const drivers = (b.drivers || []).map((d) => `
+    <div class="cell">
+      <div class="cell-label">${esc(d.k)}</div>
+      <div class="cell-value sm ${dirOf(d.dir || d.v)}">${esc(d.v)}</div>
+    </div>`).join("");
+  return `
+    <p class="para">${show(b.what, "")}</p>
+    <p class="block-title">為什麼火</p>
+    <div class="grid g3">${drivers}</div>
+    ${has(b.position) ? `<p class="kv-inline">產業位置：<b>${esc(b.position)}</b></p>` : ""}`;
+}
+
+function renderSectorMembers() {
+  const m = state.data.members || {};
+  const chip = (s) => `<span class="chip">${esc(s.name)}${has(s.ticker) ? ` <em>${esc(s.ticker)}</em>` : ""}</span>`;
+  const leaders = (m.leaders || []).map(chip).join("");
+  const sats = (m.satellites || []).map(chip).join("");
+  return `
+    ${leaders ? `<p class="block-title">龍頭</p><div class="chips">${leaders}</div>` : ""}
+    ${sats ? `<p class="block-title" style="margin-top:12px">衛星 / 跟漲</p><div class="chips">${sats}</div>` : ""}
+    <p class="disclaimer">${show(m.note, "成員以 XQ 族群最新成分為準（此處示意）")}</p>`;
+}
+
+function renderSectorMoney() {
+  const mo = state.data.money || {};
+  const grid = `
+    <div class="grid g2">
+      <div class="cell"><div class="cell-label">成交比重</div><div class="cell-value sm">${show(mo.weight)}</div><div class="cell-sub">資金聚焦度</div></div>
+      <div class="cell"><div class="cell-label">比重差</div><div class="cell-value sm ${mo.weightDiffDir || ""}">${show(mo.weightDiff)}</div><div class="cell-sub">資金流入/出</div></div>
+      <div class="cell"><div class="cell-label">量比</div><div class="cell-value sm">${show(mo.volRatio)}</div><div class="cell-sub">量能放大</div></div>
+      <div class="cell"><div class="cell-label">買進大戶</div><div class="cell-value sm">${show(mo.bigBuyer)}</div><div class="cell-sub">大戶方向</div></div>
+    </div>`;
+  const tree = renderTreemap(mo.treemap);
+  const take = has(mo.takeaway) ? `<div class="note-box">${esc(mo.takeaway)}</div>` : "";
+  const term = `<p class="term">成交比重＝這族群占今天大盤成交多少｜比重差＝跟前期比資金流入還流出｜量比＝量能放大幾倍｜買進大戶＝大戶在買還是賣。</p>`;
+  return grid + tree + take + term;
+}
+
+function renderSectorBody(key) {
+  if (key === "cover") return renderSectorCover();
+  if (key === "brief") return renderSectorBrief();
+  if (key === "members") return renderSectorMembers();
+  if (key === "money") return renderSectorMoney();
+  return renderCta();
+}
+/* ========================================================================= */
+
 function renderCard() {
   cardEl.setAttribute("aria-label", `第 ${state.index + 1} 張，共 ${state.count} 張`);
+
+  if (state.mode === "sector") {
+    const key = sectorKeys[state.index];
+    const head = SECTOR_HEADERS[key];
+    cardHeaderEl.style.background = head.bg;
+    cardHeaderEl.textContent = head.text(state.data);
+    cardBodyEl.innerHTML = renderSectorBody(key);
+    cardBodyEl.scrollTop = 0;
+    state.currentVisual = null;
+    return;
+  }
 
   if (state.mode === "feature") {
     const card = state.data.cards[state.index];
@@ -432,6 +545,10 @@ async function init() {
       state.mode = "feature";
       state.count = (data.cards || []).length;
       deckTitleEl.textContent = data.title || "XQ 功能介紹";
+    } else if (data.deckType === "sector") {
+      state.mode = "sector";
+      state.count = sectorKeys.length;
+      deckTitleEl.textContent = `${data.cover?.name || ""} ｜ 熱門族群圖卡`;
     } else {
       state.mode = "etf";
       state.count = slideKeys.length;

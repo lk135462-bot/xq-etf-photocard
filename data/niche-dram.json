@@ -1,0 +1,70 @@
+{
+  "deckType": "sector",
+  "id": "niche-dram",
+  "level": "theme",
+  "categoryLabel": "主題族群",
+  "ctaUrl": "https://www.xq.com.tw/?utm_source=photocard&utm_medium=card&utm_campaign=sector_card&deck=sector_niche-dram",
+  "cover": {
+    "name": "利基型記憶體",
+    "pitch": "記憶體缺貨漲價，營收年增逾 3 倍",
+    "hookLabel": "月營收 YoY（5 月）",
+    "hookValue": "+356.40%",
+    "dayChange": "+7.96%",
+    "market": { "twse": "+2.42%", "otc": "+3.46%", "txf": "+2.64%" },
+    "asOf": "資料：XQ 族群透視・盤中示意（月營收為 5 月）"
+  },
+  "brief": {
+    "what": "利基型記憶體＝非主流規格的特殊記憶體（車用、工控、消費性等），受 AI 需求與庫存回補帶動缺貨漲價，是這波記憶體循環中彈性最大的一段。",
+    "drivers": [
+      { "k": "當日漲幅", "v": "+7.96%", "dir": "up" },
+      { "k": "月營收 YoY", "v": "+356%", "dir": "up" },
+      { "k": "資金", "v": "流入", "dir": "up" }
+    ],
+    "position": "半導體 → 記憶體 → 利基型（非標準品）"
+  },
+  "members": {
+    "note": "成員以 XQ 族群最新成分為準（此處為示意，請於 XQ 族群透視點入查看）",
+    "leaders": [
+      { "name": "華邦電", "ticker": "2344" },
+      { "name": "南亞科", "ticker": "2408" }
+    ],
+    "satellites": [
+      { "name": "鈺創", "ticker": "5351" },
+      { "name": "晶豪科", "ticker": "3006" },
+      { "name": "十銓", "ticker": "4967" },
+      { "name": "宜鼎", "ticker": "5289" }
+    ]
+  },
+  "money": {
+    "weight": "電子權值居前",
+    "weightDiff": "＋ 流入",
+    "weightDiffDir": "up",
+    "volRatio": "放大",
+    "bigBuyer": "偏買",
+    "takeaway": "漲幅、資金、量能、大戶四者同步偏多，屬量價籌碼三同步的強勢族群；但短線漲多，留意過熱回檔與輪動風險。",
+    "treemap": {
+      "caption": "記憶體生態系・當日漲幅（塊面為成交值示意）",
+      "blocks": [
+        { "name": "記憶體製造", "change": "+7.98%" },
+        { "name": "利基型記憶體", "change": "+7.96%" },
+        { "name": "矽晶圓", "change": "+7.83%" },
+        { "name": "MLCC", "change": "+6.96%" },
+        { "name": "IC 封測", "change": "+5.76%" },
+        { "name": "DRAM", "change": "+5.68%" }
+      ]
+    }
+  },
+  "cta": {
+    "header": "3 步驟，用 XQ 追族群輪動",
+    "steps": [
+      { "title": "開族群透視", "desc": "看哪個族群資金正在流入、漲幅領先" },
+      { "title": "找強勢成員", "desc": "點入族群，挑出領頭股與跟漲股" },
+      { "title": "加自選 / 設警示", "desc": "追蹤輪動節奏，不錯過下一棒" }
+    ],
+    "brandBox": {
+      "title": "XQ 族群透視",
+      "desc": "族群輪動快，資金往哪流？\n漲幅、營收、資金、大戶一頁看穿"
+    },
+    "buttonText": "開啟 XQ 全球贏家"
+  }
+}
