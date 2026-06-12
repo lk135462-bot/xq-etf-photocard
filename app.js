@@ -1,4 +1,4 @@
-const BUILD = "0612f";
+const BUILD = "0612g";
 const slideKeys = ["cover", "basic", "holdings", "perfRisk", "cta"];
 const sectorKeys = ["cover", "brief", "members", "money", "cta"];
 
@@ -541,19 +541,25 @@ async function init() {
     const data = await loadData(id);
     state.data = data;
     state.index = 0;
+    let pageTitle;
     if (data.deckMode === "feature") {
       state.mode = "feature";
       state.count = (data.cards || []).length;
       deckTitleEl.textContent = data.title || "XQ 功能介紹";
+      pageTitle = `${data.title || "XQ 功能介紹"} ｜ XQ 全球贏家`;
     } else if (data.deckType === "sector") {
       state.mode = "sector";
       state.count = sectorKeys.length;
       deckTitleEl.textContent = `${data.cover?.name || ""} ｜ 熱門族群圖卡`;
+      pageTitle = `${data.cover?.name || ""} 熱門族群圖卡 ｜ XQ 全球贏家`;
     } else {
       state.mode = "etf";
       state.count = slideKeys.length;
       deckTitleEl.textContent = `${data.id} ${data.cover?.name || ""} ｜ ETF 圖卡`;
+      pageTitle = `${data.id} ${data.cover?.name || ""} ETF 圖卡 ｜ XQ 全球贏家`;
     }
+    // 動態更新瀏覽器分頁標題（原本寫死成 ETF，不論 deck 都不變）
+    document.title = pageTitle;
     deckTitleEl.textContent += `　·　build ${BUILD}`;
     render();
   } catch (e) {
