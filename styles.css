@@ -1,12 +1,12 @@
 :root {
   --bg: #060912;
   --ink: #eaf0f8;
-  --muted: #8a97ab;
+  --muted: #aebaca;  /* APCA 提亮：小說明文 Lc 44→63（深色主題 WCAG2 不可靠，改用 APCA）*/
   --line: rgba(255, 255, 255, 0.09);
   --glass: rgba(255, 255, 255, 0.045);
   --glass-2: rgba(255, 255, 255, 0.07);
 
-  --up: #ff5560;     /* 台股紅漲 */
+  --up: #ff6e77;     /* 台股紅漲（APCA 提亮 Lc 43→49，仍清楚為紅）*/
   --down: #25d98a;   /* 台股綠跌 */
   --gold: #ffcf6b;
 
@@ -319,7 +319,7 @@ body::before {
 .cell-value.sm { font-size: 15.5px; }
 .cell-value.up { color: var(--up); }
 .cell-value.down { color: var(--down); }
-.cell-sub { font-size: 10px; color: var(--muted); margin-top: 4px; }
+.cell-sub { font-size: 10px; color: var(--muted); margin-top: 4px; } /* was #80868b Lc36 → muted Lc63 */
 
 /* ---------- 段落 ---------- */
 .para {
