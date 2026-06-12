@@ -1,4 +1,4 @@
-const BUILD = "0612j";
+const BUILD = "0612k";
 const slideKeys = ["cover", "basic", "holdings", "perfRisk", "cta"];
 const sectorKeys = ["cover", "brief", "members", "money", "cta"];
 
@@ -138,8 +138,8 @@ function renderHoldings() {
        <div class="chips">${top.map((t) => `<span class="chip">${esc(t.name || t)}</span>`).join("")}</div>`
     : "";
 
-  return yieldBlock + sectorBlock + topBlock +
-    `<p class="disclaimer">${show(h.note, "成分以最新公告為準，實際持股請於 XQ 內查看")}</p>`;
+  return `<div class="card-fill">` + yieldBlock + sectorBlock + topBlock +
+    `<p class="disclaimer">${show(h.note, "成分以最新公告為準，實際持股請於 XQ 內查看")}</p></div>`;
 }
 
 /* ---------- 卡4 報酬與風險 ---------- */
@@ -235,8 +235,8 @@ function renderFeatureVisual(v) {
     const active = v.active || 0;
     const rows = Array.isArray(v.rows) ? (v.rows[active] || []) : (v.sample || []);
     return `<div class="ui-mock interactive" data-mock="tabs">
-      <div class="ui-tabs">${(v.items || []).map((t, i) =>
-        `<span class="ui-tab ${i === active ? "on" : ""}" data-i="${i}">${esc(t)}</span>`).join("")}</div>
+      <div class="ui-tabs" role="tablist">${(v.items || []).map((t, i) =>
+        `<span class="ui-tab ${i === active ? "on" : ""}" data-i="${i}" role="tab" tabindex="0" aria-selected="${i === active}">${esc(t)}</span>`).join("")}</div>
       ${has(v.caption) ? `<div class="ui-cap">${esc(v.caption)}</div>` : ""}
       <div class="ui-quote">${renderQuoteRows(rows)}</div>
       <div class="ui-hint">點分頁切換 →</div>
@@ -247,7 +247,7 @@ function renderFeatureVisual(v) {
     const hasInfo = Array.isArray(v.info) && v.info.length;
     return `<div class="ui-mock interactive" data-mock="pills">
       <div class="ui-pills">${(v.items || []).map((t, i) =>
-        `<span class="ui-pill ${i === active ? "on" : ""}" data-i="${i}">${esc(t)}</span>`).join("")}</div>
+        `<span class="ui-pill ${i === active ? "on" : ""}" data-i="${i}" role="button" tabindex="0">${esc(t)}</span>`).join("")}</div>
       ${hasInfo ? `<div class="ui-pill-info">${renderPillInfo(v.info[active])}</div>` : ""}
       <div class="ui-hint">${hasInfo ? "點分類看說明 →" : "點分類試試 →"}</div>
     </div>`;
@@ -393,10 +393,11 @@ function renderSectorMembers() {
   const chip = (s) => `<span class="chip">${esc(s.name)}${has(s.ticker) ? ` <em>${esc(s.ticker)}</em>` : ""}</span>`;
   const leaders = (m.leaders || []).map(chip).join("");
   const sats = (m.satellites || []).map(chip).join("");
-  return `
+  return `<div class="card-fill">
     ${leaders ? `<p class="block-title">龍頭</p><div class="chips">${leaders}</div>` : ""}
     ${sats ? `<p class="block-title" style="margin-top:12px">衛星 / 跟漲</p><div class="chips">${sats}</div>` : ""}
-    <p class="disclaimer">${show(m.note, "成員以 XQ 族群最新成分為準（此處示意）")}</p>`;
+    <p class="disclaimer">${show(m.note, "成員以 XQ 族群最新成分為準（此處示意）")}</p>
+  </div>`;
 }
 
 function renderSectorMoney() {
@@ -536,6 +537,13 @@ cardBodyEl.addEventListener("click", (e) => {
     if (infoEl && v && Array.isArray(v.info)) infoEl.innerHTML = renderPillInfo(v.info[i]);
     track("demo_pill", { pill: pill.textContent });
   }
+});
+
+// 鍵盤可操作：Enter/Space 觸發 tab/pill（a11y，WCAG 2.1.1）
+cardBodyEl.addEventListener("keydown", (e) => {
+  if (e.key !== "Enter" && e.key !== " ") return;
+  const el = e.target.closest(".ui-tab, .ui-pill");
+  if (el) { e.preventDefault(); el.click(); }
 });
 
 // 觸控左右滑動
