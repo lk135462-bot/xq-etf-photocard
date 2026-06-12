@@ -1,4 +1,4 @@
-const BUILD = "0612d";
+const BUILD = "0612e";
 const slideKeys = ["cover", "basic", "holdings", "perfRisk", "cta"];
 
 const state = { index: 0, data: null, mode: "etf", count: 5 };
@@ -216,21 +216,32 @@ const HEADERS = {
 /* ===================== 功能型 deck（deckMode: feature）===================== */
 const FEATURE_COLORS = ["#6f63d6", "#2f7f9f", "#16a06f", "#5b4db2", "#14532d"];
 
-// 模擬 XQ 真實 UI 的小預覽（tab 列 / 篩選 chip / 監控列）
+// 模擬 XQ 真實 UI 的小預覽（可互動：tab 列 / 篩選 chip / 監控列）
+function renderQuoteRows(rows) {
+  return (rows || []).map((s) =>
+    `<div class="ui-q-row"><span>${esc(s.k)}</span><b class="${s.dir || ""}">${esc(s.v)}</b></div>`).join("");
+}
+
 function renderFeatureVisual(v) {
   if (!v || !v.type) return "";
   if (v.type === "tabs") {
     const active = v.active || 0;
-    return `<div class="ui-mock">
+    const rows = Array.isArray(v.rows) ? (v.rows[active] || []) : (v.sample || []);
+    return `<div class="ui-mock interactive" data-mock="tabs">
       <div class="ui-tabs">${(v.items || []).map((t, i) =>
-        `<span class="ui-tab ${i === active ? "on" : ""}">${esc(t)}</span>`).join("")}</div>
-      ${Array.isArray(v.sample) ? `<div class="ui-quote">${v.sample.map((s) =>
-        `<div class="ui-q-row"><span>${esc(s.k)}</span><b>${esc(s.v)}</b></div>`).join("")}</div>` : ""}
+        `<span class="ui-tab ${i === active ? "on" : ""}" data-i="${i}">${esc(t)}</span>`).join("")}</div>
+      ${has(v.caption) ? `<div class="ui-cap">${esc(v.caption)}</div>` : ""}
+      <div class="ui-quote">${renderQuoteRows(rows)}</div>
+      <div class="ui-hint">點分頁切換 →</div>
     </div>`;
   }
   if (v.type === "pills") {
-    return `<div class="ui-mock"><div class="ui-pills">${(v.items || []).map((t, i) =>
-      `<span class="ui-pill ${i === 0 ? "on" : ""}">${esc(t)}</span>`).join("")}</div></div>`;
+    const active = v.active || 0;
+    return `<div class="ui-mock interactive" data-mock="pills">
+      <div class="ui-pills">${(v.items || []).map((t, i) =>
+        `<span class="ui-pill ${i === active ? "on" : ""}" data-i="${i}">${esc(t)}</span>`).join("")}</div>
+      <div class="ui-hint">點分類試試 →</div>
+    </div>`;
   }
   if (v.type === "rows") {
     return `<div class="ui-mock ui-rows">${(v.items || []).map((r) =>
@@ -240,6 +251,16 @@ function renderFeatureVisual(v) {
 }
 
 function renderFeatureCover(c) {
+  const hero = c.hero || {};
+  const heroBlock = (has(hero.big) || has(hero.label)) ? `
+      <div class="feat-stat">
+        <div class="fs-row">
+          ${has(hero.big) ? `<span class="fs-num">${esc(hero.big)}</span>` : ""}
+          ${has(hero.unit) ? `<span class="fs-unit">${esc(hero.unit)}</span>` : ""}
+          ${has(hero.label) ? `<span class="fs-label">${esc(hero.label)}</span>` : ""}
+        </div>
+        ${has(hero.sub) ? `<div class="fs-sub">${esc(hero.sub)}</div>` : ""}
+      </div>` : "";
   return `
     <section class="cover">
       ${has(c.tag) ? `<span class="cover-tag">${esc(c.tag)}</span>` : ""}
@@ -247,19 +268,18 @@ function renderFeatureCover(c) {
         <h2 class="cover-name">${esc(c.title)}</h2>
         <p class="cover-pitch">${show(c.pitch, "")}</p>
       </div>
+      ${heroBlock}
       ${renderFeatureVisual(c.visual)}
-      ${has(c.heroStat) ? `
-      <div class="cover-price-box">
-        <div class="cover-price">${esc(c.heroStat)}</div>
-        ${has(c.heroLabel) ? `<div class="cover-asof">${esc(c.heroLabel)}</div>` : ""}
-      </div>` : ""}
     </section>`;
 }
 
 function renderFeatureCard2(c) {
   const bullets = (c.bullets || []).map((b) => {
-    if (typeof b === "string") return `<li>${esc(b)}</li>`;
-    return `<li><b>${esc(b.k)}</b>${has(b.v) ? "：" + esc(b.v) : ""}</li>`;
+    if (typeof b === "string") return `<li><span class="b-k">${esc(b)}</span></li>`;
+    return `<li>
+      <span class="b-k">${esc(b.k)}</span>
+      ${has(b.v) ? `<span class="b-v">${esc(b.v)}</span>` : ""}
+    </li>`;
   }).join("");
   return `
     ${has(c.icon) ? `<div class="feat-icon">${esc(c.icon)}</div>` : ""}
@@ -295,12 +315,14 @@ function renderCard() {
 
   if (state.mode === "feature") {
     const card = state.data.cards[state.index];
+    state.currentVisual = card.visual || null;
     cardHeaderEl.style.background = card.color || FEATURE_COLORS[state.index % FEATURE_COLORS.length];
     cardHeaderEl.textContent = card.header || "";
     cardBodyEl.innerHTML = renderFeatureBody(card);
     cardBodyEl.scrollTop = 0;
     return;
   }
+  state.currentVisual = null;
 
   const key = slideKeys[state.index];
   const head = HEADERS[key];
@@ -362,6 +384,30 @@ nextBtn.addEventListener("click", () => {
   if (state.index === state.count - 1) { openCta(); return; }
   state.index += 1;
   render();
+});
+
+// 互動式 UI 預覽：點分頁換數據、點 chip 換高亮
+cardBodyEl.addEventListener("click", (e) => {
+  const tab = e.target.closest(".ui-tab");
+  if (tab) {
+    const v = state.currentVisual;
+    if (!v || v.type !== "tabs") return;
+    const i = Number(tab.dataset.i);
+    const mock = tab.closest(".ui-mock");
+    mock.querySelectorAll(".ui-tab").forEach((el, idx) => el.classList.toggle("on", idx === i));
+    const rows = Array.isArray(v.rows) ? (v.rows[i] || []) : (v.sample || []);
+    const q = mock.querySelector(".ui-quote");
+    if (q) q.innerHTML = renderQuoteRows(rows);
+    track("demo_tab", { tab_index: i });
+    return;
+  }
+  const pill = e.target.closest(".ui-pill");
+  if (pill) {
+    const mock = pill.closest(".ui-mock");
+    mock.querySelectorAll(".ui-pill").forEach((el) => el.classList.remove("on"));
+    pill.classList.add("on");
+    track("demo_pill", { pill: pill.textContent });
+  }
 });
 
 // 觸控左右滑動

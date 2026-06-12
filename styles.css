@@ -203,6 +203,7 @@ body::before {
   font-size: 32px; font-weight: 900;
   margin: 4px 0 0; line-height: 1.18;
   letter-spacing: -0.5px;
+  white-space: pre-line;
   background: linear-gradient(180deg, #ffffff, #c4d2e6);
   -webkit-background-clip: text; background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -396,6 +397,25 @@ body::before {
 }
 .feat-sub { font-size: 15px; color: #dbe4f0; font-weight: 700; margin: 0 0 16px; line-height: 1.5; }
 
+/* 封面數據 stat */
+.feat-stat {
+  margin: 18px 0 6px;
+  padding: 16px 18px;
+  background: linear-gradient(135deg, rgba(47, 159, 255, 0.12), rgba(139, 91, 255, 0.08));
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+.fs-row { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; }
+.fs-num {
+  font-family: "Sora", sans-serif;
+  font-size: 36px; font-weight: 800; letter-spacing: -1.5px; line-height: 1;
+  background: var(--grad-blue);
+  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+}
+.fs-unit { font-size: 15px; color: var(--muted); font-weight: 700; }
+.fs-label { font-size: 15.5px; color: #e7eef8; font-weight: 700; margin-left: 4px; }
+.fs-sub { font-size: 12.5px; color: var(--muted); margin-top: 8px; line-height: 1.5; }
+
 /* 模擬 XQ UI 的小預覽 */
 .ui-mock {
   background: #0c121c;
@@ -405,13 +425,24 @@ body::before {
   margin: 0 0 16px;
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
 }
+.ui-mock.interactive { border-color: rgba(47, 159, 255, 0.28); }
+.ui-cap { font-size: 11px; color: var(--muted); margin: 0 0 10px; letter-spacing: .3px; }
+.ui-hint {
+  margin-top: 10px; text-align: right;
+  font-size: 11px; color: #6cc0ff;
+  animation: hintPulse 1.8s ease-in-out infinite;
+}
+@keyframes hintPulse { 0%,100%{opacity:.55} 50%{opacity:1} }
 .ui-tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 12px; }
 .ui-tab {
   flex: 1; text-align: center;
   font-size: 13px; color: var(--muted);
   padding: 8px 2px 11px;
   position: relative;
+  cursor: pointer; user-select: none;
+  transition: color .15s;
 }
+.ui-tab:active { transform: scale(0.96); }
 .ui-tab.on { color: #6cc0ff; font-weight: 700; }
 .ui-tab.on::after {
   content: ""; position: absolute; left: 14%; right: 14%; bottom: -1px; height: 2px;
@@ -434,7 +465,10 @@ body::before {
   border: 1px solid rgba(108, 192, 255, 0.5);
   color: #8fc2f0;
   background: transparent;
+  cursor: pointer; user-select: none;
+  transition: transform .12s, background .15s, color .15s;
 }
+.ui-pill:active { transform: scale(0.94); }
 .ui-pill.on {
   background: var(--grad-teal);
   color: #04222e;
@@ -484,6 +518,8 @@ body::before {
   border: 1px solid rgba(139, 91, 255, 0.34);
 }
 .bullets li b { color: #fff; font-weight: 700; }
+.b-k { display: block; font-size: 15px; font-weight: 700; color: #fff; letter-spacing: .2px; }
+.b-v { display: block; font-size: 12px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
 .highlight {
   position: relative;
   background: linear-gradient(135deg, rgba(37, 217, 138, 0.16), rgba(47, 159, 255, 0.08));
