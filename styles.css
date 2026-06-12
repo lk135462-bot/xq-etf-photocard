@@ -525,6 +525,17 @@ body::before {
   font-weight: 700;
   border-color: transparent;
 }
+.ui-pill-info {
+  margin-top: 12px;
+  padding: 12px 13px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: flex; flex-direction: column; gap: 5px;
+  min-height: 58px;
+}
+.pi-desc { font-size: 13.5px; color: #e7eef8; font-weight: 700; line-height: 1.4; }
+.pi-sample { font-size: 12px; color: #6cc0ff; line-height: 1.45; }
 
 .ui-rows { display: flex; flex-direction: column; gap: 8px; padding: 12px; }
 .ui-row {

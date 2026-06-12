@@ -1,4 +1,4 @@
-const BUILD = "0612h";
+const BUILD = "0612i";
 const slideKeys = ["cover", "basic", "holdings", "perfRisk", "cta"];
 const sectorKeys = ["cover", "brief", "members", "money", "cta"];
 
@@ -223,6 +223,12 @@ function renderQuoteRows(rows) {
     `<div class="ui-q-row"><span>${esc(s.k)}</span><b class="${s.dir || ""}">${esc(s.v)}</b></div>`).join("");
 }
 
+function renderPillInfo(info) {
+  if (!info) return "";
+  if (typeof info === "string") return `<span class="pi-desc">${esc(info)}</span>`;
+  return `${has(info.desc) ? `<span class="pi-desc">${esc(info.desc)}</span>` : ""}${has(info.sample) ? `<span class="pi-sample">${esc(info.sample)}</span>` : ""}`;
+}
+
 function renderFeatureVisual(v) {
   if (!v || !v.type) return "";
   if (v.type === "tabs") {
@@ -238,10 +244,12 @@ function renderFeatureVisual(v) {
   }
   if (v.type === "pills") {
     const active = v.active || 0;
+    const hasInfo = Array.isArray(v.info) && v.info.length;
     return `<div class="ui-mock interactive" data-mock="pills">
       <div class="ui-pills">${(v.items || []).map((t, i) =>
         `<span class="ui-pill ${i === active ? "on" : ""}" data-i="${i}">${esc(t)}</span>`).join("")}</div>
-      <div class="ui-hint">點分類試試 →</div>
+      ${hasInfo ? `<div class="ui-pill-info">${renderPillInfo(v.info[active])}</div>` : ""}
+      <div class="ui-hint">${hasInfo ? "點分類看說明 →" : "點分類試試 →"}</div>
     </div>`;
   }
   if (v.type === "rows") {
@@ -520,8 +528,12 @@ cardBodyEl.addEventListener("click", (e) => {
   const pill = e.target.closest(".ui-pill");
   if (pill) {
     const mock = pill.closest(".ui-mock");
+    const i = Number(pill.dataset.i);
     mock.querySelectorAll(".ui-pill").forEach((el) => el.classList.remove("on"));
     pill.classList.add("on");
+    const v = state.currentVisual;
+    const infoEl = mock.querySelector(".ui-pill-info");
+    if (infoEl && v && Array.isArray(v.info)) infoEl.innerHTML = renderPillInfo(v.info[i]);
     track("demo_pill", { pill: pill.textContent });
   }
 });
